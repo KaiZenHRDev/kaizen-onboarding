@@ -1,0 +1,82 @@
+/* fileName: Sidebar.css */
+/* =============================
+   Sidebar
+============================= */
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -250px; /* Hidden by default */
+  padding: 0; 
+  transition: left 0.3s ease-in-out; 
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+/* Sidebar Header Area */
+.sidebar-header-area {
+  height: 64px; 
+  display: flex;
+  align-items: center;
+  padding: 0 20px; 
+  flex-shrink: 0;
+  /* ✅ CHANGED: Align content (the button) to the right */
+  justify-content: flex-end; 
+}
+
+/* Internal Toggle Button */
+.sidebar-toggle-btn {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-toggle-btn:hover {
+  opacity: 1;
+}
+
+/* Navigation Links Container */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto; 
+  flex-grow: 1;
+}
+
+.sidebar-nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.sidebar-nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-nav-link.active {
+  background-color: #ffffff;
+  color: var(--theme-primary);
+}
+
+.close-btn {
+  display: none;
+}

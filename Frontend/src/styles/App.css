@@ -1,0 +1,589 @@
+/* fileName: App.css */
+/* =============================
+   Global Reset & Typography
+============================= */
+:root {
+  --theme-primary: #7c3aed;
+  --theme-secondary: #6366f1;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(to bottom right, #f7f9fc, #eef2ff);
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============================
+   Main Layout
+============================= */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* ✅ CHANGED: Default margin 0 (full width) */
+  margin-left: 0;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* ✅ NEW: Only push content on desktop when sidebar is open */
+@media (min-width: 769px) {
+  .content-wrapper.sidebar-open {
+    margin-left: 250px;
+  }
+}
+
+/* =============================
+   Main Content Wrapper
+============================= */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px 0;
+}
+
+/* =============================
+   Card Styles
+============================= */
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12),
+    0 4px 12px rgba(99, 102, 241, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.18),
+    0 6px 16px rgba(99, 102, 241, 0.12);
+}
+
+.card-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+  color: #ffffff;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.card-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #e0e7ff;
+}
+
+/* =============================
+   Form Grid
+============================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 2px var(--theme-primary); 
+  outline: none;
+  transform: scale(1.01);
+}
+
+/* =============================
+   Form Actions
+============================= */
+.form-actions {
+  padding: 20px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* =============================
+   Buttons
+============================= */
+.btn {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); 
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+
+.btn-success {
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  background: #059669; /* Darker green */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+
+/* =============================
+   Table Styles
+============================= */
+.employee-table-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.employee-table-header input {
+  flex-grow: 1;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 12px;
+  min-width: 1800px;
+}
+
+.employee-table th,
+.employee-table td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.employee-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  font-size: 11px;
+}
+
+.employee-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.employee-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-id {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+  color: #059669;
+  background-color: #ecfdf5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* =============================
+   Loading & Spinner
+============================= */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #e5e7eb;
+  border-top-color: var(--theme-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =============================
+   Error Message
+============================= */
+.error-message {
+  padding: 24px;
+  text-align: center;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* =============================
+   Responsive Adjustments
+============================= */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Note: .sidebar adjustments are now handled in Sidebar.css via classes */
+
+  .close-btn {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    font-size: 2rem;
+    cursor: pointer;
+  }
+}
+
+/* Style for the main container of the form content */
+.form-content-area {
+  padding: 20px; 
+}
+
+.form-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4b5563; 
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.full-width-field {
+    grid-column: 1 / -1; 
+}
+
+.grid > .field {
+    margin-bottom: 0; 
+}
+
+.form-content-area > .field {
+    margin-bottom: 20px;
+}
+
+.field.full-width-field {
+    margin-top: 0; 
+    margin-bottom: 20px;
+}
+
+/* =============================
+   Modal Styles
+============================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+  z-index: 10000;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+  color: #ffffff;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.modal-section-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: calc(80vh - 80px);
+  overflow-y: auto;
+}
+
+.modal-section-list li {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.modal-section-list li:last-child {
+  border-bottom: none;
+}
+
+.modal-section-btn {
+  width: 100%;
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-section-btn:hover {
+  background-color: #f9fafb;
+  color: var(--theme-primary);
+  padding-left: 28px;
+}
+
+.modal-section-btn:active {
+  background-color: #f3f4f6;
+}
+
+/* =============================
+   Review Page Specific Styles
+============================= */
+.review-page {
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; 
+}
+
+.review-field {
+  margin-bottom: 12px;
+}
+
+.review-field label {
+  font-size: 13px;
+  color: #374151; 
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.review-field p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  color: #111827;
+  word-break: break-word;
+}
+
+.review-section-subtitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  grid-column: 1 / -1;
+}
+
+.review-entry {
+  margin-bottom: 0; 
+}
+
+.review-entry + .review-entry {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.review-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-section-header span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-edit-inline {
+  background: none;
+  border: none;
+  color: var(--theme-primary); 
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-inline:hover {
+  background-color: #f3f4f6; 
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
