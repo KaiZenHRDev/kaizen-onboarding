@@ -38,7 +38,6 @@ function LoginAdmin() {
 
       if (response.ok) {
         toast.dismiss(loadingToast);
-        toast.success("Welcome back!"); 
 
         // ✅ STORE TENANT CONTEXT: Essential for path-based routing in other pages
         localStorage.setItem('userId', data.userId || '');
