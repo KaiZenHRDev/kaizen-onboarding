@@ -140,7 +140,7 @@ const EXPECTED_HEADERS = {
     'sectionCode': "'sectiocode', 'sectioname'",
     'securityCode': "'grpid', 'grpname'",
     'socsoCode': "'soctabcode', 'soctabdesc'",
-    'statutoryCode': "'rid_stfcorefcode', 'compnycode'"
+    'statutoryCode': "'corefcode', 'compnycode'"
 };
 
 const AdminUpdate = () => {

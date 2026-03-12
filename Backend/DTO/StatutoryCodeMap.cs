@@ -8,7 +8,7 @@ namespace RecruitmentBackend.Maps
     {
         public StatutoryCodeMap()
         {
-            Map(m => m.Code).Name("rid_stfcorefcode");
+            Map(m => m.Code).Name("corefcode");
             Map(m => m.CompanyCode).Name("compnycode");
         }
     }

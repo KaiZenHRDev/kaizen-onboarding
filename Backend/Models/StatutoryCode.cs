@@ -8,7 +8,7 @@ namespace RecruitmentBackend.Models
     public class StatutoryCode
     {
         [Key]
-        [Column("rid_stfcorefcode")] 
+        [Column("corefcode")] 
         public required string Code { get; set; }
 
         [Column("compnycode")] 

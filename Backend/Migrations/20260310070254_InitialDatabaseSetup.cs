@@ -676,14 +676,14 @@ namespace OnBoarding.Migrations
                 name: "statutory_code",
                 columns: table => new
                 {
-                    rid_stfcorefcode = table.Column<string>(type: "text", nullable: false),
+                    corefcode = table.Column<string>(type: "text", nullable: false),
                     compnycode = table.Column<string>(type: "text", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     company_id = table.Column<string>(type: "character varying(50)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_statutory_code", x => x.rid_stfcorefcode);
+                    table.PrimaryKey("PK_statutory_code", x => x.corefcode);
                     table.ForeignKey(
                         name: "FK_statutory_code_Companies_company_id",
                         column: x => x.company_id,

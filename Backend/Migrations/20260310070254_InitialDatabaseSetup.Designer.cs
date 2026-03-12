@@ -1459,7 +1459,7 @@ namespace OnBoarding.Migrations
                 {
                     b.Property<string>("Code")
                         .HasColumnType("text")
-                        .HasColumnName("rid_stfcorefcode");
+                        .HasColumnName("corefcode");
 
                     b.Property<string>("CompanyCode")
                         .IsRequired()

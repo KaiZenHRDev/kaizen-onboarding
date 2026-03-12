@@ -50,7 +50,7 @@ namespace RecruitmentBackend.Data
             { "section_code", ("sectiocode", "sectioname") },
             { "security_code", ("grpid", "grpname") },
             { "socso_code", ("soctabcode", "soctabdesc") },
-            { "statutory_code", ("rid_stfcorefcode", "compnycode") } // Updated to map compnycode to Name for cascading
+            { "statutory_code", ("corefcode", "compnycode") } // Updated to map compnycode to Name for cascading
         };
 
         public DropdownRepository(AppDbContext dbContext, ITableMapper tableMapper)
