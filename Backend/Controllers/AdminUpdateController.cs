@@ -159,7 +159,10 @@ namespace RecruitmentBackend.Controllers
                     else if (tableName.Equals("statutory_code", StringComparison.OrdinalIgnoreCase))
                     {
                         csv.Context.RegisterClassMap<StatutoryCodeMap>();
-                        var records = csv.GetRecords<StatutoryCodeRecord>().ToList();
+                        var rawRecords = csv.GetRecords<StatutoryCodeRecord>().ToList();
+                        
+                        // FIX: Group by Code and CompanyCode to eliminate the thousands of duplicate rows in the CSV
+                        var records = rawRecords.GroupBy(x => new { x.Code, x.CompanyCode }).Select(g => g.Last()).ToList();
                         
                         var entities = records.Select(r => new StatutoryCode 
                         { 

@@ -156,9 +156,22 @@ namespace RecruitmentBackend.Data
             ConfigureLookup<SectionCode>();
             ConfigureLookup<SecurityCode>();
             ConfigureLookup<SocsoCode>();
-            ConfigureLookup<StatutoryCode>();
             ConfigureLookup<UnitCode>();
             ConfigureLookup<VECode>();
+
+            // --- SPECIAL CASE: StatutoryCode Composite Key ---
+            modelBuilder.Entity<StatutoryCode>(entity =>
+            {
+                // Define composite key using Code, CompanyCode, and CompanyId
+                entity.HasKey(e => new { e.Code, e.CompanyCode, e.CompanyId });
+                
+                // Still apply the company foreign key relationship like the others
+                entity.HasOne("Company")
+                    .WithMany()
+                    .HasForeignKey("CompanyId")
+                    .HasPrincipalKey("CompanyId")
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             // ============================================================
             // 4. CANDIDATE (GLOBAL PROFILE)
