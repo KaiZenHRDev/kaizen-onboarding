@@ -1,13 +1,13 @@
 // fileName: pages/CompanyUpdate.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
 function CompanyUpdate() {
   const [companies, setCompanies] = useState([]);
   const [selectedCompanyId, setSelectedCompanyId] = useState('');
   
-  // Define Backend URL for previews
-  const API_BASE_URL = "http://localhost:5000";
+  // Base URL for API requests. Adjust this to match your production domain.
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://192.168.0.55:8084";
 
   // Form State
   const [formData, setFormData] = useState({
@@ -22,15 +22,10 @@ function CompanyUpdate() {
 
   const [loading, setLoading] = useState(false);
 
-  // 1. Fetch All Companies on Component Mount
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  const fetchCompanies = async () => {
+  // 1. Wrap fetchCompanies in useCallback to satisfy the exhaustive-deps rule
+  const fetchCompanies = useCallback(async () => {
     try {
-      // ✅ UPDATED ROUTE: Changed from '/api/company/all' to global '/api/company'
-      const response = await fetch('/api/company');
+      const response = await fetch(`${API_BASE_URL}/api/company`);
       if (response.ok) {
         const data = await response.json();
         setCompanies(data);
@@ -39,9 +34,14 @@ function CompanyUpdate() {
       console.error("Error fetching companies:", error);
       toast.error("Could not load company list.");
     }
-  };
+  }, [API_BASE_URL]); // It depends on API_BASE_URL
 
-  // 2. Handle Dropdown Selection
+  // 2. Fetch All Companies on Component Mount
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]); // Safely added to dependency array
+
+  // 3. Handle Dropdown Selection
   const handleSelectCompany = (e) => {
     const id = e.target.value;
     setSelectedCompanyId(id);
@@ -55,11 +55,9 @@ function CompanyUpdate() {
             colourCode: selected.colourCode || '#ffffff'
         });
         
+        // Directly use the Base64 string stored in the database
         if (selected.logoPath) {
-            const fullPath = selected.logoPath.startsWith('http') 
-                ? selected.logoPath 
-                : `${API_BASE_URL}${selected.logoPath}`;
-            setLogoPreview(fullPath);
+            setLogoPreview(selected.logoPath);
         } else {
             setLogoPreview(null);
         }
@@ -72,13 +70,13 @@ function CompanyUpdate() {
     }
   };
 
-  // 3. Handle Text Change
+  // 4. Handle Text Change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
-  // 4. Handle File Change
+  // 5. Handle File Change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -91,7 +89,7 @@ function CompanyUpdate() {
     }
   };
 
-  // 5. Submit Updates
+  // 6. Submit Updates
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedCompanyId) return;
@@ -110,8 +108,7 @@ function CompanyUpdate() {
 
       const token = localStorage.getItem('authToken');
       
-      // ✅ UPDATED ROUTE: Changed from '/api/company/update/{id}' to RESTful '/api/company/{id}'
-      const response = await fetch(`/api/company/${encodeURIComponent(selectedCompanyId)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/company/${encodeURIComponent(selectedCompanyId)}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -153,7 +150,7 @@ function CompanyUpdate() {
                 >
                     <option value="">-- Select a Company --</option>
                     {companies.map(c => (
-                        <option key={c.id} value={c.companyId}>
+                        <option key={c.companyId} value={c.companyId}>
                             {c.companyName} ({c.companyId})
                         </option>
                     ))}

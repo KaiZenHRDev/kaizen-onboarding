@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
@@ -35,12 +34,11 @@ namespace RecruitmentBackend.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _environment; 
 
-        public CompanyController(AppDbContext context, IWebHostEnvironment environment)
+        // Removed IWebHostEnvironment since we no longer save physical files to wwwroot
+        public CompanyController(AppDbContext context)
         {
             _context = context;
-            _environment = environment;
         }
 
         // ==========================================
@@ -54,7 +52,6 @@ namespace RecruitmentBackend.Controllers
             return Ok(companies);
         }
 
-        // ✅ FIXED: Consolidated duplicate GetById methods into one
         [HttpGet("~/api/company/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -82,7 +79,8 @@ namespace RecruitmentBackend.Controllers
                 return BadRequest(new { message = "Company ID already exists." });
             }
 
-            string? logoPath = await SaveLogo(dto.Logo);
+            // Convert the uploaded file to a Base64 string directly
+            string? logoBase64 = await ConvertToBase64(dto.Logo);
 
             var company = new Company
             {
@@ -90,7 +88,7 @@ namespace RecruitmentBackend.Controllers
                 CompanyName = dto.CompanyName,
                 CompanyDetails = dto.CompanyDetails,
                 ColourCode = dto.ColourCode, 
-                LogoPath = logoPath,
+                LogoPath = logoBase64, // Storing the Base64 string in the existing column
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -114,7 +112,7 @@ namespace RecruitmentBackend.Controllers
 
             if (dto.Logo != null)
             {
-                company.LogoPath = await SaveLogo(dto.Logo);
+                company.LogoPath = await ConvertToBase64(dto.Logo);
             }
 
             await _context.SaveChangesAsync();
@@ -133,28 +131,20 @@ namespace RecruitmentBackend.Controllers
             return Ok(new { message = "Company deleted successfully." }); 
         }
 
-        private async Task<string?> SaveLogo(IFormFile? logo)
+        // Helper method to convert IFormFile to a Base64 string format suitable for HTML img tags
+        private async Task<string?> ConvertToBase64(IFormFile? logo)
         {
             if (logo == null || logo.Length == 0) return null;
 
-            string webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            var uploadsFolder = Path.Combine(webRootPath, "uploads");
-
-            if (!Directory.Exists(uploadsFolder))
+            using (var memoryStream = new MemoryStream())
             {
-                Directory.CreateDirectory(uploadsFolder);
+                await logo.CopyToAsync(memoryStream);
+                var fileBytes = memoryStream.ToArray();
+                string base64String = Convert.ToBase64String(fileBytes);
+                
+                // Return a formatted Data URI so the React frontend can render it immediately
+                return $"data:{logo.ContentType};base64,{base64String}";
             }
-
-            var fileExtension = Path.GetExtension(logo.FileName);
-            var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await logo.CopyToAsync(stream);
-            }
-
-            return $"/uploads/{uniqueFileName}";
         }
     }
 }

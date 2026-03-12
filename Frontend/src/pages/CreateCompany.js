@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 function CreateCompany() {
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://192.168.0.55:8084";
+
   // State for form fields
   const [formData, setFormData] = useState({
     companyId: '',
     companyName: '',
     companyDetails: '', 
-    colourCode: '#ffffff', // Default value
+    colourCode: '#ffffff',
   });
   
   // State for file upload
@@ -28,20 +30,16 @@ function CreateCompany() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Basic validation for image type
       if (!file.type.startsWith('image/')) {
         toast.error('Please upload an image file (PNG, JPG, etc).');
         return;
       }
-      // limit size to 2MB
       if (file.size > 2 * 1024 * 1024) {
         toast.error('File size too large. Max 2MB.');
         return;
       }
 
       setLogoFile(file);
-      
-      // Create a preview URL
       const objectUrl = URL.createObjectURL(file);
       setLogoPreview(objectUrl);
     }
@@ -58,12 +56,11 @@ function CreateCompany() {
     setLoading(true);
 
     try {
-      // Use FormData to send text + file
       const data = new FormData();
       data.append('companyId', formData.companyId);
       data.append('companyName', formData.companyName);
       data.append('companyDetails', formData.companyDetails); 
-      data.append('colourCode', formData.colourCode); // ✅ Append Colour
+      data.append('colourCode', formData.colourCode); 
       
       if (logoFile) {
         data.append('logo', logoFile);
@@ -71,8 +68,8 @@ function CreateCompany() {
 
       const token = localStorage.getItem('authToken');
 
-      // ✅ UPDATED ROUTE: Changed from '/api/company/create' to RESTful '/api/company'
-      const response = await fetch('/api/company', {
+      // Use the absolute URL mapped to your environment
+      const response = await fetch(`${API_BASE_URL}/api/company`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -84,7 +81,6 @@ function CreateCompany() {
 
       if (response.ok) {
         toast.success(result.message || "Company created successfully!");
-        // Reset form
         setFormData({ 
             companyId: '', 
             companyName: '', 
@@ -226,7 +222,6 @@ function CreateCompany() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="form-actions" style={{ justifyContent: 'flex-end', marginTop: '20px' }}>
             <button 
               type="submit" 

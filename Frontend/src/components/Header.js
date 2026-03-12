@@ -15,8 +15,8 @@ export const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const location = useLocation(); 
   const [companyInfo, setCompanyInfo] = useState(defaultBranding);
 
-  // Define Backend URL
-  const API_BASE_URL = "http://localhost:5000";
+  // ✅ UPDATED: Use environment variable for the backend URL
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://192.168.0.55:8084";
 
   useEffect(() => {
     const fetchCompanyInfo = async () => {
@@ -28,7 +28,8 @@ export const Header = ({ toggleSidebar, isSidebarOpen }) => {
       }
 
       try {
-        const response = await fetch(`/api/company/${storedCompanyId}`);
+        // ✅ UPDATED: Added API_BASE_URL to prevent 404/routing errors on IIS
+        const response = await fetch(`${API_BASE_URL}/api/company/${storedCompanyId}`);
         if (response.ok) {
           const data = await response.json();
           setCompanyInfo({
@@ -46,15 +47,15 @@ export const Header = ({ toggleSidebar, isSidebarOpen }) => {
     };
 
     fetchCompanyInfo();
-  }, [location.pathname]);
+  }, [location.pathname, API_BASE_URL]);
 
-  // Helper to construct the full image URL
+  // Helper to construct the full image URL or pass through the Base64 string
   const getLogoUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http') || path.startsWith('data:')) {
-      return path; // Already a full URL
+      return path; // Already a full URL or Base64 string
     }
-    // Prepend backend URL to relative path
+    // Prepend backend URL to relative path (fallback)
     return `${API_BASE_URL}${path}`;
   };
 
@@ -63,7 +64,6 @@ export const Header = ({ toggleSidebar, isSidebarOpen }) => {
       <div className="app-header-container">
         
         {/* 1. Toggle Button (Moved to Left) */}
-        {/* ✅ CHANGED: Hidden when Sidebar is open to avoid duplicates */}
         <div 
             className="sidebar-toggle-btn" 
             onClick={toggleSidebar}
