@@ -304,6 +304,9 @@ const App = () => {
                                 </ProtectedRoute>
                             } />
 
+                            {/* --- CATCH-ALL ROUTE --- */}
+                            <Route path="*" element={<Navigate to="/login" replace />} />
+
                         </Routes>
                     </div>
                 </main>
