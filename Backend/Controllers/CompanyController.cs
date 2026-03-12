@@ -5,8 +5,9 @@ using RecruitmentBackend.Data;
 using RecruitmentBackend.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting; // Added back for wwwroot access
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
@@ -34,7 +35,7 @@ namespace RecruitmentBackend.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _environment; // Added back to get folder paths
+        private readonly IWebHostEnvironment _environment; 
 
         public CompanyController(AppDbContext context, IWebHostEnvironment environment)
         {
@@ -56,6 +57,7 @@ namespace RecruitmentBackend.Controllers
         [HttpGet("~/api/company/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
+            // Guard for SuperAdmin virtual sessions
             if (id.Equals("SYSTEM", StringComparison.OrdinalIgnoreCase)) 
             {
                 return Ok(new { CompanyId = "SYSTEM", CompanyName = "System Administration" });
@@ -71,6 +73,32 @@ namespace RecruitmentBackend.Controllers
             return Ok(company);
         }
 
+        // ✅ NEW API TO FETCH UPLOADS DIRECTLY FROM /api/uploads/
+        [HttpGet("~/api/uploads/{fileName}")]
+        public IActionResult GetUpload(string fileName)
+        {
+            string webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var filePath = Path.Combine(webRootPath, "uploads", fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var ext = Path.GetExtension(fileName).ToLowerInvariant();
+            string mimeType = ext switch
+            {
+                ".png" => "image/png",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".gif" => "image/gif",
+                ".svg" => "image/svg+xml",
+                _ => "application/octet-stream"
+            };
+
+            return PhysicalFile(filePath, mimeType);
+        }
+
         [HttpPost("~/api/company")]
         public async Task<IActionResult> Create([FromForm] CompanyCreateDto dto)
         {
@@ -79,7 +107,6 @@ namespace RecruitmentBackend.Controllers
                 return BadRequest(new { message = "Company ID already exists." });
             }
 
-            // Save the physical file to the server and get the URL path
             string? logoPath = await SaveLogo(dto.Logo);
 
             var company = new Company
@@ -88,7 +115,7 @@ namespace RecruitmentBackend.Controllers
                 CompanyName = dto.CompanyName,
                 CompanyDetails = dto.CompanyDetails,
                 ColourCode = dto.ColourCode, 
-                LogoPath = logoPath, // Storing physical path (e.g., /uploads/xyz.png)
+                LogoPath = logoPath,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -112,6 +139,18 @@ namespace RecruitmentBackend.Controllers
 
             if (dto.Logo != null)
             {
+                // Optional: Delete old logo to save space
+                if (!string.IsNullOrEmpty(company.LogoPath))
+                {
+                    string webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                    var oldFileName = Path.GetFileName(company.LogoPath);
+                    var oldFilePath = Path.Combine(webRootPath, "uploads", oldFileName);
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
                 company.LogoPath = await SaveLogo(dto.Logo);
             }
 
@@ -131,12 +170,10 @@ namespace RecruitmentBackend.Controllers
             return Ok(new { message = "Company deleted successfully." }); 
         }
 
-        // Helper method to save physical files to wwwroot/uploads
         private async Task<string?> SaveLogo(IFormFile? logo)
         {
             if (logo == null || logo.Length == 0) return null;
 
-            // Get the wwwroot path securely
             string webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             var uploadsFolder = Path.Combine(webRootPath, "uploads");
 
@@ -154,7 +191,7 @@ namespace RecruitmentBackend.Controllers
                 await logo.CopyToAsync(stream);
             }
 
-            // Return relative URL for frontend to use
+            // Return the path starting with /uploads/ so it matches the expected pattern
             return $"/uploads/{uniqueFileName}";
         }
     }
