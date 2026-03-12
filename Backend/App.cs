@@ -13,6 +13,8 @@ using System;
 using Microsoft.AspNetCore.RateLimiting; 
 using System.Threading.RateLimiting;
 using System.Text.Json.Serialization; 
+using Microsoft.Extensions.FileProviders; 
+using System.IO; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,6 +127,19 @@ app.UseRateLimiter();
 app.UseCors("AllowFrontend"); 
 
 app.UseStaticFiles(); 
+
+// Map /api/uploads directly to wwwroot/uploads
+var uploadsFolder = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "uploads");
+if (!Directory.Exists(uploadsFolder))
+{
+    Directory.CreateDirectory(uploadsFolder);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsFolder),
+    RequestPath = "/api/uploads"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
